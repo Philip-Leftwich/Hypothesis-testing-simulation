@@ -178,7 +178,7 @@ server <- function(input, output, session) {
     req(sim_results())
     df <- sim_results()
     p <- ggplot(df, aes(x = p_value,
-                        y = ..density..)) +
+                        y=(..count..)/sum(..count..))) +
       geom_histogram(bins = 30, fill = "steelblue", alpha = 0.6) +
       facet_wrap(~ sample_size) +
       labs(
@@ -186,7 +186,8 @@ server <- function(input, output, session) {
         x = "p-value", y = "Density"
       ) +
       theme_minimal()+
-      scale_x_continuous(limits = c(-0.05,1))
+      scale_x_continuous(limits = c(-0.05,1))+
+      scale_y_continuous(labels = scales::label_percent(scale = 400))
 
       p + geom_vline(xintercept = 0.05, linetype = "dashed", color = "red")
  
@@ -198,8 +199,9 @@ server <- function(input, output, session) {
     df <- sim_results()
     label <- if (input$test_type == "t_test") "Cohen's d" else "Correlation (r)"
     p1 <- ggplot(df, aes(x = effect_size,
-                         y = ..density..)) +
+                         y=(..count..)/sum(..count..))) +
       geom_histogram(bins = 30, fill = "darkgreen", alpha = 0.6) +
+      scale_y_continuous(labels = scales::label_percent(scale = 100))+
       facet_wrap(~ sample_size) +
       labs(title = paste(label, "distribution"), x = label, y = "Density") +
       theme_minimal()
