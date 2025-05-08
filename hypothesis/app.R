@@ -177,12 +177,13 @@ server <- function(input, output, session) {
   output$p_value_hist <- renderPlot({
     req(sim_results())
     df <- sim_results()
-    p <- ggplot(df, aes(x = p_value)) +
+    p <- ggplot(df, aes(x = p_value,
+                        y = ..density..)) +
       geom_histogram(bins = 30, fill = "steelblue", alpha = 0.6) +
-      facet_wrap(~ sample_size, scales = "free_y") +
+      facet_wrap(~ sample_size) +
       labs(
         title = paste("P-value distribution under", if (input$hypothesis == "null") "H₀" else "H₁"),
-        x = "p-value", y = "Count"
+        x = "p-value", y = "Density"
       ) +
       theme_minimal()+
       scale_x_continuous(limits = c(-0.05,1))
@@ -196,10 +197,11 @@ server <- function(input, output, session) {
     req(sim_results())
     df <- sim_results()
     label <- if (input$test_type == "t_test") "Cohen's d" else "Correlation (r)"
-    p1 <- ggplot(df, aes(x = effect_size)) +
+    p1 <- ggplot(df, aes(x = effect_size,
+                         y = ..density..)) +
       geom_histogram(bins = 30, fill = "darkgreen", alpha = 0.6) +
-      facet_wrap(~ sample_size, scales = "free_y") +
-      labs(title = paste(label, "distribution"), x = label, y = "Count") +
+      facet_wrap(~ sample_size) +
+      labs(title = paste(label, "distribution"), x = label, y = "Density") +
       theme_minimal()
   
     if (input$hypothesis == "null") p1 + geom_vline(xintercept = 0, linetype = "dashed", color = "red") else   p1 + 
